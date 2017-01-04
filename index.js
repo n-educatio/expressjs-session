@@ -76,6 +76,7 @@ var defer = typeof setImmediate === 'function'
  * @param {Boolean} [options.resave] Resave unmodified sessions back to the store
  * @param {Boolean} [options.rolling] Enable/disable rolling session expiration
  * @param {Boolean} [options.saveUninitialized] Save uninitialized sessions to the store
+ * @param {Boolean} [options.touch] Touch session on request
  * @param {String|Array} [options.secret] Secret for signing session ID
  * @param {Object} [options.store=MemoryStore] Session store
  * @param {String} [options.unset]
@@ -107,6 +108,9 @@ function session(options) {
   // get the rolling session option
   var rollingSessions = Boolean(opts.rolling)
 
+  // get the touch session option
+  var touchingSession = opts.touch;
+
   // get the save uninitialized session option
   var saveUninitializedSession = opts.saveUninitialized
 
@@ -120,6 +124,10 @@ function session(options) {
   if (resaveSession === undefined) {
     deprecate('undefined resave option; provide resave option');
     resaveSession = true;
+  }
+
+  if (touchingSession === undefined) {
+    touchingSession = true;
   }
 
   if (saveUninitializedSession === undefined) {
@@ -232,7 +240,7 @@ function session(options) {
         return;
       }
 
-      if (!touched) {
+      if (!touched && touchingSession) {
         // touch session
         req.session.touch()
         touched = true
