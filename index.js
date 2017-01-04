@@ -328,7 +328,7 @@ function session(options) {
         return _end.call(res, chunk, encoding);
       }
 
-      if (!touched) {
+      if (!touched && touchingSession) {
         // touch session
         req.session.touch()
         touched = true
@@ -440,7 +440,7 @@ function session(options) {
         return false;
       }
 
-      return cookieId === req.sessionID && !shouldSave(req);
+      return cookieId === req.sessionID && !shouldSave(req) && touchingSession;
     }
 
     // determine if cookie should be set on response
